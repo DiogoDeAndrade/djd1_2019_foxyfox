@@ -783,7 +783,7 @@ MonoBehaviour:
   jumpMaxTime: 0.15
   groundCollider: {fileID: 2005174315}
   airCollider: {fileID: 2005174321}
-  maxJumpCount: 1
+  maxJumpCount: 2
   groundCheck: {fileID: 2037038644}
   groundCheckRadius: 1.36
   groundLayers:

@@ -23,6 +23,9 @@ public class Player : MonoBehaviour
     Animator    anim;
     float       jumpTime;
     int         jumpsAvailable;
+    float       hAxis;
+    bool        jumpPressed;
+    bool        jumpClicked;
     
     void Start()
     {
@@ -32,16 +35,14 @@ public class Player : MonoBehaviour
         jumpsAvailable = maxJumpCount;
     }
 
-    void Update()
+    private void FixedUpdate()
     {
-        // Movimento em X
-        float hAxis = Input.GetAxis("Horizontal");
-
+        // 
         Vector2 currentVelocity = rb.velocity;
 
         currentVelocity.x = currentVelocity.x * (1 - drag);
 
-        currentVelocity.x = currentVelocity.x + hAxis * acceleration * Time.deltaTime;
+        currentVelocity.x = currentVelocity.x + hAxis * acceleration * Time.fixedDeltaTime;
 
         currentVelocity.x = Mathf.Clamp(currentVelocity.x, -maxSpeed, maxSpeed);
 
@@ -57,20 +58,20 @@ public class Player : MonoBehaviour
         airCollider.enabled = !onGround;
 
         // Salto
-        if ((Input.GetButtonDown("Jump")) && (jumpsAvailable > 0))
+        if ((jumpClicked) && (jumpsAvailable > 0))
         {
             currentVelocity.y = jumpSpeed;
             rb.gravityScale = 0.0f;
 
-            jumpTime = Time.time;
+            jumpTime = Time.fixedTime;
 
             jumpsAvailable--;
 
             //UnityEditor.EditorApplication.isPaused = true;
         }
-        else if ((Input.GetButton("Jump")) && ((Time.time - jumpTime) < jumpMaxTime))
+        else if ((jumpPressed) && ((Time.fixedTime - jumpTime) < jumpMaxTime))
         {
-                
+
         }
         else
         {
@@ -79,8 +80,18 @@ public class Player : MonoBehaviour
 
         // Set da velocidade
         rb.velocity = currentVelocity;
+    }
+
+    void Update()
+    {
+        // Movimento em X
+        hAxis = Input.GetAxis("Horizontal");
+        // Salto
+        jumpClicked = Input.GetButtonDown("Jump");
+        jumpPressed = Input.GetButton("Jump");
 
         // Animação
+        Vector2 currentVelocity = rb.velocity;
         anim.SetFloat("AbsVelX", Mathf.Abs(currentVelocity.x));
 
         if (currentVelocity.x < -0.5f)
