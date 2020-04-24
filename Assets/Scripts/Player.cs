@@ -26,12 +26,28 @@ public class Player : MonoBehaviour
     float       hAxis;
     bool        jumpPressed;
     bool        jumpClicked;
-    
-    void Start()
+    bool        onGround;
+    HP          hpComponent;
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        hpComponent = GetComponent<HP>();
+    }
 
+    void OnEnable()
+    {
+        hpComponent.onDead += OnDead;
+    }
+
+    void OnDisable()
+    {
+        hpComponent.onDead -= OnDead;
+    }
+
+    void Start()
+    {
         jumpsAvailable = maxJumpCount;
     }
 
@@ -48,7 +64,7 @@ public class Player : MonoBehaviour
 
         Collider2D groundCollision = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayers);
 
-        bool onGround = groundCollision != null;
+        onGround = groundCollision != null;
         if ((onGround) && (currentVelocity.y <= 0))
         {
             jumpsAvailable = maxJumpCount;
@@ -80,19 +96,29 @@ public class Player : MonoBehaviour
 
         // Set da velocidade
         rb.velocity = currentVelocity;
+
+        // Reset jump click
+        jumpClicked = false;
     }
 
     void Update()
     {
+        if (hpComponent.hp <= 0) return;
+        
         // Movimento em X
         hAxis = Input.GetAxis("Horizontal");
         // Salto
-        jumpClicked = Input.GetButtonDown("Jump");
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpClicked = true;
+        }
         jumpPressed = Input.GetButton("Jump");
 
         // Animação
         Vector2 currentVelocity = rb.velocity;
         anim.SetFloat("AbsVelX", Mathf.Abs(currentVelocity.x));
+        anim.SetFloat("VelY", currentVelocity.y);
+        anim.SetBool("onGround", onGround);
 
         if (currentVelocity.x < -0.5f)
         {
@@ -110,5 +136,17 @@ public class Player : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(groundCheck.position, groundCheckRadius);
+    }
+
+    void OnDead()
+    {
+        anim.SetTrigger("onDead");
+
+        rb.velocity = new Vector2(0.0f, 200.0f);
+    }
+
+    void OnDestroySelf()
+    {
+        Destroy(gameObject);
     }
 }
