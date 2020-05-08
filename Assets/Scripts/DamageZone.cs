@@ -6,19 +6,34 @@ public class DamageZone : MonoBehaviour
 {
     [SerializeField] Collider2D damageArea;
     [SerializeField] LayerMask  damageMask;
-    [SerializeField] float      damage = 100;
+    [SerializeField] float      damage = 1;
 
     ContactFilter2D contactFilter;
+    HP              hpComponent;
+
+    public delegate void OnDealtDamage(HP target, float damage);
+    public event OnDealtDamage onDamageDealt;
 
     void Start()
     {
         contactFilter = new ContactFilter2D();
         contactFilter.SetLayerMask(damageMask);
         contactFilter.useTriggers = true;
+
+        hpComponent = GetComponent<HP>();
+        if (hpComponent == null)
+        {
+            hpComponent = GetComponentInParent<HP>();
+        }
     }
 
     void Update()
     {
+        if (hpComponent)
+        {
+            if (hpComponent.isInvulnerable) return;
+        }
+
         Collider2D[] results = new Collider2D[64];
 
         int nCollisions = Physics2D.OverlapCollider(damageArea, contactFilter, results);
@@ -33,7 +48,10 @@ public class DamageZone : MonoBehaviour
 
                 if (hp)
                 {
-                    hp.DealDamage(damage);
+                    if (hp.DealDamage(damage))
+                    {
+                        if (onDamageDealt != null) onDamageDealt(hp, damage);
+                    }
                 }
             }
         }

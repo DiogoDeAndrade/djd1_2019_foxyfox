@@ -19,31 +19,43 @@ public class Player : MonoBehaviour
     public float     groundCheckRadius = 1;
     public LayerMask groundLayers;
 
-    Rigidbody2D rb;
-    Animator    anim;
-    float       jumpTime;
-    int         jumpsAvailable;
-    float       hAxis;
-    bool        jumpPressed;
-    bool        jumpClicked;
-    bool        onGround;
-    HP          hpComponent;
+    public DamageZone   jumpDamageZone;
+
+    Rigidbody2D     rb;
+    Animator        anim;
+    SpriteRenderer  spriteRenderer;
+    float           jumpTime;
+    int             jumpsAvailable;
+    float           hAxis;
+    bool            jumpPressed;
+    bool            jumpClicked;
+    bool            onGround;
+    HP              hpComponent;
+
+    float           invulnerabilityFXTimer = 0;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         hpComponent = GetComponent<HP>();
     }
 
     void OnEnable()
     {
         hpComponent.onDead += OnDead;
+        hpComponent.onHit += OnHit;
+
+        if (jumpDamageZone) jumpDamageZone.onDamageDealt += OnJumpDamageReaction;
     }
 
     void OnDisable()
     {
         hpComponent.onDead -= OnDead;
+        hpComponent.onHit -= OnHit;
+
+        if (jumpDamageZone) jumpDamageZone.onDamageDealt -= OnJumpDamageReaction;
     }
 
     void Start()
@@ -99,6 +111,11 @@ public class Player : MonoBehaviour
 
         // Reset jump click
         jumpClicked = false;
+
+        if (jumpDamageZone)
+        {
+            jumpDamageZone.enabled = (currentVelocity.y < 0.0f);
+        }
     }
 
     void Update()
@@ -130,6 +147,21 @@ public class Player : MonoBehaviour
             if (transform.right.x < 0)
                 transform.rotation = Quaternion.identity;
         }
+
+        if (hpComponent.isInvulnerable)
+        {
+            invulnerabilityFXTimer = invulnerabilityFXTimer - Time.deltaTime;
+            if (invulnerabilityFXTimer < 0)
+            {
+                spriteRenderer.enabled = !spriteRenderer.enabled;
+                invulnerabilityFXTimer = 0.1f;
+            }
+        }
+        else
+        {
+            spriteRenderer.enabled = true;
+            invulnerabilityFXTimer = 0.0f;
+        }
     }
 
     private void OnDrawGizmos()
@@ -142,6 +174,18 @@ public class Player : MonoBehaviour
     {
         anim.SetTrigger("onDead");
 
+        rb.velocity = new Vector2(0.0f, 300.0f);
+    }
+
+    void OnHit()
+    {
+        anim.SetTrigger("onHit");
+
+        rb.velocity = new Vector2(0.0f, 200.0f);
+    }
+
+    void OnJumpDamageReaction(HP target, float damage)
+    {
         rb.velocity = new Vector2(0.0f, 200.0f);
     }
 
