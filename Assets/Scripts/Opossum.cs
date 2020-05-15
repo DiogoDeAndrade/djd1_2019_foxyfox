@@ -10,8 +10,10 @@ public class Opossum : MonoBehaviour
     [SerializeField] float          detectionRadius = 3.0f;
     [SerializeField] LayerMask      groundLayers;
     [SerializeField] RectTransform  healthBar;
+    [SerializeField] GameObject     explosionPrefab;
+    [SerializeField] Transform      explosionSpawnPointRef;
 
-    Rigidbody2D     rigidBody;
+    Rigidbody2D rigidBody;
     HP              hpComponent;
     SpriteRenderer  spriteRenderer;
     Animator        anim;
@@ -103,6 +105,8 @@ public class Opossum : MonoBehaviour
     void OnDead()
     {
         anim.SetTrigger("onDead");
+
+        Instantiate(explosionPrefab, explosionSpawnPointRef.position, explosionSpawnPointRef.rotation);
 
         DamageZone[] damageZones = GetComponentsInChildren<DamageZone>();
         foreach (var dz in damageZones)

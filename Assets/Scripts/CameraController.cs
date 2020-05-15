@@ -67,4 +67,9 @@ public class CameraController : MonoBehaviour
         Gizmos.DrawLine(p3, p4);
         Gizmos.DrawLine(p4, p1);
     }
+
+    public void SetFollowTarget(Transform p)
+    {
+        followTarget = p;
+    }
 }

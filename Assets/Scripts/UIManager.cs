@@ -9,18 +9,24 @@ public class UIManager : MonoBehaviour
     public enum HealthDisplayType { Text, Discrete, Meter };
 
     public HealthDisplayType    healthDisplayType;
+    public Player               playerRef;
     public HP                   playerHPRef;
     public TextMeshProUGUI      playerHPTextRef;
+    public TextMeshProUGUI      playerScoreTextRef;
     public Image[]              hearts;
     public Image                heartFill;
 
     void Start()
     {
-        
     }
 
     void Update()
     {
+        if ((playerRef == null) || (playerHPRef == null))
+        {
+            return;
+        }
+
         if (healthDisplayType == HealthDisplayType.Text)
         {
             playerHPTextRef.text = "x" + playerHPRef.hp;
@@ -40,5 +46,7 @@ public class UIManager : MonoBehaviour
         {
             heartFill.fillAmount = playerHPRef.hp / 3.0f;
         }
+
+        playerScoreTextRef.text = "Score: " + playerRef.GetScore();
     }
 }

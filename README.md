@@ -5,9 +5,17 @@ do curso de [Videojogos][licvideo] da [ULHT].
 
 Durante as aulas, vão ser executados uma série de passos que vão levar deste projecto inicial até ao resultado final, em que cada branch corresponde a uma aula.
 
+## Assets
+
 Os assets de personagens e cenários usados pertencem ao pacote [Sunnyland], disponível gratuitamente na Asset Store, criado por Ansimuz. 
+
 O icon do coração foi criado por [DontMind8]
-Todos os direitos pertencem ao autor original.
+
+Explosão mágica por [Master484]
+
+Gemas por [ClintBellanger]
+
+Todos os direitos pertencem aos autores originais.
 
 ## Licenças
 
@@ -29,3 +37,5 @@ Os textos e restantes ficheiros são disponibilizados através das suas própria
 [ULHT]:https://www.ulusofona.pt/
 [Sunnyland]:https://assetstore.unity.com/packages/2d/characters/sunny-land-103349
 [DontMind8]: dontmind8.blogspot.com
+[Master484]: http://m484games.ucoz.com/
+[ClintBellanger]: https://opengameart.org/content/gem-icons

@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
     bool            jumpClicked;
     bool            onGround;
     HP              hpComponent;
+    int             score = 0;
 
     float           invulnerabilityFXTimer = 0;
 
@@ -192,5 +193,20 @@ public class Player : MonoBehaviour
     void OnDestroySelf()
     {
         Destroy(gameObject);
+    }
+
+    public void AddScore(int s)
+    {
+        score += s;
+
+        if (GameMng.instance.highScore < score)
+        {
+            GameMng.instance.highScore = score;
+        }
+    }
+
+    public int GetScore()
+    {
+        return score;
     }
 }
