@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] Player             playerPrefab;
-    [SerializeField] Transform          playerRespawnPosition;
+    public           Transform          playerRespawnPosition;
     [SerializeField] CameraController   cameraControllerRef;
 
     Player player;

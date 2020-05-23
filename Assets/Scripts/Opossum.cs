@@ -13,7 +13,9 @@ public class Opossum : MonoBehaviour
     [SerializeField] GameObject     explosionPrefab;
     [SerializeField] Transform      explosionSpawnPointRef;
 
-    Rigidbody2D rigidBody;
+    [SerializeField] AudioClip      hitSound;
+
+    Rigidbody2D     rigidBody;
     HP              hpComponent;
     SpriteRenderer  spriteRenderer;
     Animator        anim;
@@ -30,11 +32,13 @@ public class Opossum : MonoBehaviour
 
     private void OnEnable()
     {
+        hpComponent.onHit += OnHit;
         hpComponent.onDead += OnDead;
     }
 
     private void OnDisable()
     {
+        hpComponent.onHit -= OnHit;
         hpComponent.onDead -= OnDead;
     }
 
@@ -112,6 +116,19 @@ public class Opossum : MonoBehaviour
         foreach (var dz in damageZones)
         {
             dz.enabled = false;
+        }
+
+        if (hitSound)
+        {
+            SoundMng.instance.PlaySound(hitSound, 0.5f);
+        }
+    }
+
+    void OnHit()
+    {
+        if (hitSound)
+        {
+            SoundMng.instance.PlaySound(hitSound, 0.5f);
         }
     }
 

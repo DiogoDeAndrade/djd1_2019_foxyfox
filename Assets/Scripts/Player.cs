@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public bool  enableInput = true;
     public float maxSpeed = 200.0f;
     public float acceleration = 50.0f;
     public float drag = 0.5f;
@@ -21,6 +22,14 @@ public class Player : MonoBehaviour
 
     public DamageZone   jumpDamageZone;
 
+    public AudioClip    hitSound;
+    public AudioClip    deathSound;
+    public AudioClip    jumpSound;
+    public AudioClip    footstepSound;
+
+    public ParticleSystem   dustPS;
+    public ParticleSystem   fallPS;
+
     Rigidbody2D     rb;
     Animator        anim;
     SpriteRenderer  spriteRenderer;
@@ -32,6 +41,7 @@ public class Player : MonoBehaviour
     bool            onGround;
     HP              hpComponent;
     int             score = 0;
+    Vector2         previousVelocity;
 
     float           invulnerabilityFXTimer = 0;
 
@@ -41,6 +51,8 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         hpComponent = GetComponent<HP>();
+
+        enableInput = true;
     }
 
     void OnEnable()
@@ -117,20 +129,41 @@ public class Player : MonoBehaviour
         {
             jumpDamageZone.enabled = (currentVelocity.y < 0.0f);
         }
+
+        if (onGround)
+        {
+            if (previousVelocity.y < -0.2f)
+            {
+                fallPS.Play();
+            }
+        }
+
+        previousVelocity = currentVelocity;
     }
 
     void Update()
     {
         if (hpComponent.hp <= 0) return;
-        
-        // Movimento em X
-        hAxis = Input.GetAxis("Horizontal");
-        // Salto
-        if (Input.GetButtonDown("Jump"))
+
+        if (enableInput)
         {
-            jumpClicked = true;
+            // Movimento em X
+            hAxis = Input.GetAxis("Horizontal");
+            // Salto
+            if (Input.GetButtonDown("Jump"))
+            {
+                jumpClicked = true;
+
+                if (onGround)
+                {
+                    if (jumpSound)
+                    {
+                        SoundMng.instance.PlaySound(jumpSound, 0.5f);
+                    }
+                }
+            }
+            jumpPressed = Input.GetButton("Jump");
         }
-        jumpPressed = Input.GetButton("Jump");
 
         // Animação
         Vector2 currentVelocity = rb.velocity;
@@ -163,6 +196,12 @@ public class Player : MonoBehaviour
             spriteRenderer.enabled = true;
             invulnerabilityFXTimer = 0.0f;
         }
+
+        if (dustPS)
+        {
+            var emission = dustPS.emission;
+            emission.enabled = onGround;
+        }
     }
 
     private void OnDrawGizmos()
@@ -176,6 +215,11 @@ public class Player : MonoBehaviour
         anim.SetTrigger("onDead");
 
         rb.velocity = new Vector2(0.0f, 300.0f);
+
+        if (deathSound)
+        {
+            SoundMng.instance.PlaySound(deathSound, 0.5f);
+        }
     }
 
     void OnHit()
@@ -183,6 +227,11 @@ public class Player : MonoBehaviour
         anim.SetTrigger("onHit");
 
         rb.velocity = new Vector2(0.0f, 200.0f);
+
+        if (hitSound)
+        {
+            SoundMng.instance.PlaySound(hitSound, 0.5f);
+        }
     }
 
     void OnJumpDamageReaction(HP target, float damage)
@@ -208,5 +257,33 @@ public class Player : MonoBehaviour
     public int GetScore()
     {
         return score;
+    }
+
+    public void PlayFootstep()
+    {
+        if (Mathf.Abs(previousVelocity.x) >= 5.0f)
+        {
+            if (footstepSound)
+            {
+                SoundMng.instance.PlaySound(footstepSound, Random.Range(0.1f, 0.15f), Random.Range(0.75f, 1.25f));
+            }
+        }
+    }
+
+    public void ResetMovement()
+    {
+        hAxis = 0.0f;
+        jumpPressed = false;
+        jumpClicked = false;
+    }
+
+    public void SetHAxis(float h)
+    {
+        hAxis = h;
+    }
+
+    public void SetJump(bool b)
+    {
+        jumpClicked = b;
     }
 }

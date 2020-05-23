@@ -20,4 +20,12 @@ public class GameMng : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
     }
+
+    void Update()
+    {
+        if ((Input.GetKeyDown(KeyCode.Escape)) && (Input.GetKey(KeyCode.LeftShift)))
+        {
+            Application.Quit();
+        }
+    }
 }
