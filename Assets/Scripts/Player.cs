@@ -33,6 +33,7 @@ public class Player : MonoBehaviour
     HP              hpComponent;
 
     float           invulnerabilityFXTimer = 0;
+    Transform       safeSpawnPoint;
 
     void Awake()
     {
@@ -40,6 +41,17 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         hpComponent = GetComponent<HP>();
+
+        SafeSpawnPoint ssp = FindObjectOfType<SafeSpawnPoint>();
+        if (ssp) safeSpawnPoint = ssp.transform;
+        else
+        {
+            GameObject go = new GameObject();
+            go.name = "SpawnSpawnPoint";
+            go.AddComponent<SafeSpawnPoint>();
+
+            safeSpawnPoint = go.transform;
+        }
     }
 
     void OnEnable()
@@ -80,6 +92,11 @@ public class Player : MonoBehaviour
         if ((onGround) && (currentVelocity.y <= 0))
         {
             jumpsAvailable = maxJumpCount;
+        }
+
+        if (onGround)
+        {
+            safeSpawnPoint.position = transform.position;
         }
 
         groundCollider.enabled = onGround;
@@ -192,5 +209,10 @@ public class Player : MonoBehaviour
     void OnDestroySelf()
     {
         Destroy(gameObject);
+    }
+
+    public void GotoSafe()
+    {
+        transform.position = safeSpawnPoint.position;
     }
 }
