@@ -33,6 +33,7 @@ public class Player : MonoBehaviour
     HP              hpComponent;
 
     float           invulnerabilityFXTimer = 0;
+    bool            shouldGoToDoor = false;
 
     void Awake()
     {
@@ -40,6 +41,8 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         hpComponent = GetComponent<HP>();
+
+        DontDestroyOnLoad(gameObject);
     }
 
     void OnEnable()
@@ -121,7 +124,9 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (hpComponent.hp <= 0) return;
-        
+
+        shouldGoToDoor = Input.GetButtonDown("Use");
+
         // Movimento em X
         hAxis = Input.GetAxis("Horizontal");
         // Salto
@@ -192,5 +197,10 @@ public class Player : MonoBehaviour
     void OnDestroySelf()
     {
         Destroy(gameObject);
+    }
+
+    public bool ShouldGoToDoor()
+    {
+        return shouldGoToDoor;
     }
 }

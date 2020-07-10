@@ -20,7 +20,15 @@ public class CameraController : MonoBehaviour
     {
         if (followTarget == null)
         {
-            return;
+            var player = FindObjectOfType<Player>();
+            if (player)
+            {
+                followTarget = player.transform;
+            }
+            else
+            {
+                return;
+            }
         }
 
         Vector3 targetPosition = followTarget.position + offset;
